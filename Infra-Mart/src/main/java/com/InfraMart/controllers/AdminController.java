@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @CrossOrigin(origins="*")
 @RestController
-@RequestMapping("/")
+@RequestMapping("/admin")
 public class AdminController 
 {
 	@Autowired
