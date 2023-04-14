@@ -125,9 +125,12 @@ public class UserServiceImpl implements UserService
 		}
 		if(user!=null)
 		{ System.out.println(u);
+//		   List<Product>p2=user.getProductlist();
+//		   p2.addAll(plist);
 			user.setProductlist(plist);
 //			udao.save(user);
 			System.out.println(u);
+			
 			return udao.save(user);
 		}
 		return null;

@@ -45,13 +45,24 @@ class ProductServiceImpl implements ProductService
 			p1.setProductName(product.getProductName());
 			p1.setProductPrice(product.getProductPrice());
 			p1.setProductUnit(product.getProductUnit());
-//			p1.setImg(product.getImg());
+			p1.setImage(product.getImage());
 //			p1.setCategory(product.getCategory());
 			p1.setProductDescription(product.getProductDescription());
 			pdao.save(p1);
 			return 1;
 		}
 		return 0;
+	}
+
+	@Override
+	public Product findproductbyId(long productId) {
+		Optional<Product> p=pdao.findById(productId);
+		if(p.isPresent())
+		{
+			Product p1=p.get();
+		return p1;
+		}
+		return null;
 	}
 
 

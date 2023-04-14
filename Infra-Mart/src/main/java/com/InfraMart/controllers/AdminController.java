@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,14 +29,12 @@ import com.InfraMart.config.ImageUtils;
 import com.InfraMart.service.CategoryService;
 import com.InfraMart.service.ProductService;
 import com.InfraMart.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 
 @CrossOrigin(origins="*")
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/")
 public class AdminController 
 {
 	@Autowired
@@ -147,6 +144,7 @@ public class AdminController
 	//		return ResponseEntity.ok(plist);
 	//	}
 
+
 	@PostMapping("/addproduct")
 	public ResponseEntity<Product> addProduct(@RequestParam("productName") String pn,@RequestParam("productDescription") String pd,@RequestParam("productPrice") long pp
 			,@RequestParam("productUnit") int pu,@RequestParam("categoryId") String s1,@RequestParam("image") MultipartFile imageFile)
@@ -224,7 +222,6 @@ public class AdminController
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
-
 	//get all products
 	@GetMapping("/displayproduct")
 	public ResponseEntity<List<Product>> getAllProducts()
@@ -265,16 +262,108 @@ public class AdminController
 
 
 	//to update product
-	@PutMapping("/updateproduct") 
-	public ResponseEntity<String> updateByProductId(@RequestBody Product product)
+	@PostMapping("/updateproduct") 
+	public ResponseEntity<String> updateByProductId(@RequestParam("productId") String id,@RequestParam("productName") String pn,@RequestParam("productDescription") String pd,@RequestParam("productPrice") long pp
+			,@RequestParam("productUnit") int pu,@RequestParam(name="image", required = false) MultipartFile imageFile)
 	{
-		int n=productService.updateByProductId(product);
-		if(n>0)
-		{
-			return new ResponseEntity("User updated successfully"+product.getProductId(),HttpStatus.CREATED);
+		//@RequestParam("categoryId") String s1,
+		System.out.println(id);
+		
+		
+		System.out.println(pn);
+		System.out.println(pd);
+		System.out.println(pp);
+		System.out.println(pu);
+		System.out.println(imageFile.getContentType());
+//		long l1=Long.parseLong(s1);
+		long id1=Long.parseLong(id);
+		Product p=new Product();
+    	p.setProductId(id1);
+		p.setProductName(pn);
+		p.setProductDescription(pd);
+		p.setProductPrice(pp);
+		
+		
+		p.setProductUnit(pu);
+//		System.out.println(l1);
+//		Category c=new Category();
+//		c.setCategoryId(l1);
+//		p.setCategory(c);
+		//		System.out.println(product.getProductName());
+		//		@RequestBody Product product,
+		//we have to give select tag in front end so we can select category and thereby categoryId
+		
+		System.out.println(imageFile.getName());
+		System.out.println(imageFile.getOriginalFilename());
+//		System.out.println(product1.getProductName());
+//		System.out.println(product1.getProductDescription());
+//		System.out.println(product1.getProductPrice());
+//		System.out.println(product1.getProductUnit());
+		System.out.println(imageFile.getContentType());
+
+//		Product p=new Product();
+//		p.setProductName(product1.getProductName());
+//		p.setProductDescription(product1.getProductDescription());
+//		p.setProductPrice(product1.getProductPrice());
+//		p.setProductUnit(product1.getProductUnit());
+//		System.out.println(product1.getProductUnit());
+		
+		try {
+			if(imageFile!=null)
+			{
+			ImageData img=(ImageData.builder()
+					.name(imageFile.getOriginalFilename())
+					.type(imageFile.getContentType())
+					.imageData(ImageUtils.compressImage(imageFile.getBytes())).build());
+
+			System.out.println(imageFile.getOriginalFilename());
+			System.out.println(ImageUtils.compressImage(imageFile.getBytes()));
+			p.setImage(img);
+			}
+			else
+			{
+				Product prd=productService.findproductbyId(p.getProductId());
+				
+				p.setImage(prd.getImage());
+			}
+			
+			
+			
+			
+			
+//			Product prd=productService.addProduct(p);
+			int n=productService.updateByProductId(p);
+//			if(prd!=null)
+//			{
+//				return ResponseEntity.ok(prd);
+//			}
+			if(n>0)
+			{
+				return new ResponseEntity("User updated successfully"+p.getProductId(),HttpStatus.CREATED);
+			}
+			else
+				return new ResponseEntity("User not found"+p.getProductId(),HttpStatus.NOT_FOUND);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		else
-			return new ResponseEntity("User not found"+product.getProductId(),HttpStatus.NOT_FOUND);
+
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		
+		
+		
+		
+		
+		
+		
+//		int n=productService.updateByProductId(product);
+//		if(n>0)
+//		{
+//			return new ResponseEntity("User updated successfully"+product.getProductId(),HttpStatus.CREATED);
+//		}
+//		else
+//			return new ResponseEntity("User not found"+product.getProductId(),HttpStatus.NOT_FOUND);
 	}
 
 

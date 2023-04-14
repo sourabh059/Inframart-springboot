@@ -15,7 +15,6 @@ public interface ProductService {
 
 	int updateByProductId(Product product);
 
-
-	
+	Product findproductbyId(long productId);
 
 }
